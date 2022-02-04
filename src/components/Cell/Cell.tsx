@@ -1,9 +1,8 @@
-import React, { MouseEventHandler, useEffect, useRef, useState } from 'react';
-import { btnStyle, useStyles } from '../Cell/Cell.style';
-
-import Button from '@mui/material/Button/Button';
+import React, { useEffect, useState } from 'react';
 import { Checkbox } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { useStyles } from '../Cell/Cell.style';
 import { actions } from '../../redux/reducers/appReducer';
 import { AppStateType } from '../../redux/store';
 
@@ -12,11 +11,12 @@ type PropsType = {
     name: string;
     tel: string;
 };
+
 export const Cell: React.FC<PropsType> = ({ id, name, tel }) => {
     const dispatch = useDispatch();
     const classes = useStyles();
     const [isSelect, setIsSelect] = useState(false);
-    const activeUserId = useSelector((state: AppStateType) => state.app.delIds);
+    const activeUserId = useSelector((state: AppStateType) => state.app.selectedIds);
 
     useEffect(() => {
         if (activeUserId.includes(id)) {
@@ -24,7 +24,7 @@ export const Cell: React.FC<PropsType> = ({ id, name, tel }) => {
         } else {
             setIsSelect(false);
         }
-    }, [activeUserId]);
+    }, [activeUserId, id]);
 
     const handleIsSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
         setIsSelect(event.target.checked);

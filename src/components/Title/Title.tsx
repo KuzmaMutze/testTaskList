@@ -1,7 +1,7 @@
 import Checkbox from '@mui/material/Checkbox/Checkbox';
 import Typography from '@mui/material/Typography/Typography';
-import React, { Dispatch, SetStateAction, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { Dispatch, SetStateAction } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { actions } from '../../redux/reducers/appReducer';
 import { useStyles } from './Title.style';

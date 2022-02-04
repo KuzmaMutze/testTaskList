@@ -37,6 +37,7 @@ const BasicModal: React.FC<PropsType> = ({ isModal, handleClose, isEdit }) => {
     const {
         control,
         handleSubmit,
+        reset,
         formState: { errors },
     } = useForm<FieldSchemaType>({
         resolver: yupResolver(fieldSchema),
@@ -45,10 +46,20 @@ const BasicModal: React.FC<PropsType> = ({ isModal, handleClose, isEdit }) => {
     const errorTel = errors.tel?.message;
 
     const nextUserId = useSelector((state: AppStateType) => state.app.users.length + 1);
+    const selectedId = useSelector((state: AppStateType) => state.app.selectedIds[0]);
+    const userInfo = useSelector((state: AppStateType) =>
+        state.app.users.find((user) => user.id === selectedId),
+    );
 
     const onSubmit = (values: FieldSchemaType) => {
-        dispatch(actions.addUserAC({ id: nextUserId, ...values }));
+        if (isEdit) {
+            dispatch(actions.editUserAC({ id: selectedId, ...values }));
+        } else {
+            dispatch(actions.addUserAC({ id: nextUserId, ...values }));
+        }
+
         handleClose();
+        reset();
     };
 
     return (
@@ -58,6 +69,7 @@ const BasicModal: React.FC<PropsType> = ({ isModal, handleClose, isEdit }) => {
                     <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
                         <Controller
                             control={control}
+                            defaultValue={userInfo?.name}
                             name="name"
                             render={({ field }) => (
                                 <TextField
@@ -70,6 +82,7 @@ const BasicModal: React.FC<PropsType> = ({ isModal, handleClose, isEdit }) => {
 
                         <Controller
                             control={control}
+                            defaultValue={userInfo?.tel}
                             name="tel"
                             render={({ field }) => (
                                 <TextField

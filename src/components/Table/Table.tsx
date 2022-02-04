@@ -1,27 +1,24 @@
 import React, { useEffect } from 'react';
 import Paper from '@mui/material/Paper/Paper';
-import { Container, Fab } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { useDispatch, useSelector } from 'react-redux';
+import { Container } from '@mui/material';
 
-import { colorDelBtn, styleIconBtn, useStyles } from './Table.style';
+import { useSelector } from 'react-redux';
+
+import { useStyles } from './Table.style';
 import { AppStateType } from '../../redux/store';
 import Modal from '../Modal/Modal';
 import { Cell } from '../Cell/Cell';
 import { Title } from '../Title/Title';
-import { actions } from './../../redux/reducers/appReducer';
+import { BtnsGroup } from '../BtnsGroup/BtnsGroup';
 
 export const Table: React.FC = () => {
-    const dispatch = useDispatch();
     const classes = useStyles();
 
     const [isModal, setIsModal] = React.useState(false);
     const [isEdit, setIsEdit] = React.useState(false);
     const [isSelectAll, setIsSelectAll] = React.useState(false);
     const users = useSelector((state: AppStateType) => state.app.users);
-    const selectIds = useSelector((state: AppStateType) => state.app.delIds);
+    const selectIds = useSelector((state: AppStateType) => state.app.selectedIds);
 
     useEffect(() => {
         if (users.length) {
@@ -40,9 +37,6 @@ export const Table: React.FC = () => {
         setIsModal(false);
         setIsEdit(false);
     };
-    const handlerDelUser = () => {
-        selectIds.forEach((id) => dispatch(actions.delSelectsUsersAC(id)));
-    };
 
     return (
         <Container className={classes.container} maxWidth="lg">
@@ -52,26 +46,16 @@ export const Table: React.FC = () => {
                     setIsSelectAll={setIsSelectAll}
                     isEmptyList={users.length < 1}
                 />
-                {users.map(({ id, name, tel }) => {
-                    return <Cell key={id + Math.random()} id={id} name={name} tel={tel} />;
-                })}
+                {users.map(({ id, name, tel }) => (
+                    <Cell key={id + Math.random()} id={id} name={name} tel={tel} />
+                ))}
             </Paper>
 
-            <Fab onClick={handleOpen} color="primary" aria-label="add" sx={styleIconBtn}>
-                <AddIcon />
-            </Fab>
-            {selectIds.length !== 0 && (
-                <div className={classes.setting}>
-                    {selectIds.length <= 1 && (
-                        <Fab onClick={handlerIsOpenEdit} color="primary" aria-label="edit">
-                            <EditIcon />
-                        </Fab>
-                    )}
-                    <Fab sx={colorDelBtn} onClick={handlerDelUser} aria-label="del">
-                        <DeleteIcon />
-                    </Fab>
-                </div>
-            )}
+            <BtnsGroup
+                handleOpen={handleOpen}
+                selectIds={selectIds}
+                handlerIsOpenEdit={handlerIsOpenEdit}
+            />
             <Modal isEdit={isEdit} isModal={isModal} handleClose={handleClose} />
         </Container>
     );

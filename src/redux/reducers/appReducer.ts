@@ -9,7 +9,7 @@ const initialState = {
         { id: 4, name: 'UserTest3', tel: '+71234567890' },
         { id: 5, name: 'UserTest4', tel: '+71234567890' },
     ] as Array<UserType>,
-    delIds: [] as Array<number>,
+    selectedIds: [] as Array<number>,
 };
 
 type initialStateType = typeof initialState;
@@ -17,6 +17,7 @@ type ActionsType = InferActionTypes<typeof actions>;
 
 export const appReducer = (state = initialState, action: ActionsType): initialStateType => {
     let selectIds: Array<number> = [];
+    let editUser: UserType | undefined;
 
     switch (action.type) {
         case 'ADD_USER':
@@ -28,13 +29,13 @@ export const appReducer = (state = initialState, action: ActionsType): initialSt
             return {
                 ...state,
                 users: state.users.filter((user) => user.id !== action.id),
-                delIds: state.delIds.filter((id) => id !== action.id),
+                selectedIds: state.selectedIds.filter((id) => id !== action.id),
             };
         }
         case 'SELECT_USER_ID': {
             return {
                 ...state,
-                delIds: [...state.delIds, action.id],
+                selectedIds: [...state.selectedIds, action.id],
             };
         }
         case 'SELECT_ALL': {
@@ -42,19 +43,40 @@ export const appReducer = (state = initialState, action: ActionsType): initialSt
 
             return {
                 ...state,
-                delIds: selectIds,
+                selectedIds: selectIds,
             };
         }
         case 'DEL_ALL_SELECT': {
             return {
                 ...state,
-                delIds: [],
+                selectedIds: [],
             };
         }
         case 'DEL_SELECT_USER_ID': {
             return {
                 ...state,
-                delIds: state.delIds.filter((id) => id !== action.id),
+                selectedIds: state.selectedIds.filter((id) => id !== action.id),
+            };
+        }
+        case 'EDIT_USER': {
+            editUser = state.users.find((user) => {
+                return user.id === action.payload.id;
+            });
+
+            if (editUser) {
+                editUser.name = action.payload.name;
+                editUser.tel = action.payload.tel;
+            }
+
+            return {
+                ...state,
+                users: state.users.map((user) => {
+                    if (user.id === action.payload.id && editUser) {
+                        return editUser;
+                    }
+
+                    return user;
+                }),
             };
         }
         default:
@@ -70,4 +92,5 @@ export const actions = {
     selectAllAC: () => ({ type: 'SELECT_ALL' } as const),
     delAllIdsAC: () => ({ type: 'DEL_ALL_SELECT' } as const),
     delSelectIdAC: (id: number) => ({ type: 'DEL_SELECT_USER_ID', id } as const),
+    editUserAC: (payload: UserType) => ({ type: 'EDIT_USER', payload } as const),
 };
