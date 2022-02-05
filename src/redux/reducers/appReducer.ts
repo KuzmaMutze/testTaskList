@@ -39,7 +39,7 @@ export const appReducer = (state = initialState, action: ActionsType): initialSt
             };
         }
         case 'SELECT_ALL': {
-            state.users.forEach((_, i) => selectIds.push(i + 1));
+            selectIds = state.users.map((user) => user.id);
 
             return {
                 ...state,
