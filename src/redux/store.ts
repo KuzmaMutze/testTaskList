@@ -1,4 +1,4 @@
-import { combineReducers, createStore } from 'redux';
+import { combineReducers, createStore, compose } from 'redux';
 import { appReducer } from './reducers/appReducer';
 
 let rootReducers = combineReducers({
